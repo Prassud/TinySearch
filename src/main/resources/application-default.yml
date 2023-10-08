@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+external:
+  cloud-storage-type: google_drive
+local:
+  tempFolderPath: ${TEMP_DIR}
+fscrawler:
+  url: ${FSCRAWEL_URL}
+google:
+  drive:
+    authcode:
+      receiverPort: ${AUTH_CODE_RECEIVER_PORT:8888}
+    root_folder_id: ${DRIVE_FOLDER_FOR_INGESTION}
+    credentials: ${CREDENTIAL_PATH}
