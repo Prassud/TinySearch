@@ -16,7 +16,9 @@ Tiny Search a Spring boot app to search the content of the cloud storage service
 2. The downloaded content first saved to local path based on the configuration and then uploaded to Fscrawler over an api
 3. Fscrawler internally use Apache Tike to extract the content from the file, and uplaoad the data to Elastic search
 4. Below is the sample file ingested to elastic search through fscrawler
-   5. 	    {
+```json
+
+{
       		"_index": "job_name",
       		"_id": "c94b8288fd34bc5c3f5b9df3c3114a60",
       		"_score": 1.0,
@@ -33,7 +35,8 @@ Tiny Search a Spring boot app to search the content of the cloud storage service
       				"real": "test4.csv"
       			}
       		}
-      	},
+      	}
+```        
 6. Once the content are ingested to elastic search, Tiny search provides an api to search the data from elastic search
    7. the Query that is used for the content search is 
        ````json
@@ -69,6 +72,10 @@ Once these environment, Application can be started by
 ```shell
 ./gradlew bootRun
 ```
+
+### API
+1. Get /api/search?query=c To search the content
+2. Post  /api/refresh To refresh the data from cloud storage to elasticsearch
 
 ### References
 [Design](https://miro.com/app/board/uXjVNdZO5gA=/?share_link_id=696351424297)
