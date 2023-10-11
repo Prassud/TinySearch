@@ -10,6 +10,7 @@ Tiny Search a Spring boot app to search the content of the cloud storage service
 3. If the file in the cloud storage is deleted the particualr file should not be shown in the search
 
 ## Approaches
+## Approach 1 [Ingestion type Fscrawler]
 ### [Fscrawler](https://fscrawler.readthedocs.io/en/latest/) and [ElasticSearch](https://www.elastic.co/guide/index.html)
 
 1. Tiny search starts as an restful web server, on start of the application, Based on the credentinals provided by the user, smart search app integrates with respective cloud storage and downloads the files.
@@ -44,12 +45,25 @@ Tiny Search a Spring boot app to search the content of the cloud storage service
     ````
 7. On query results, the app verifies the cloud storage file exists in the respective cloud storage, if it is not not available the document will be deleted asynchronously  
 
+## Approach 2 [Ingestion type direct elastic search]
+1. Tiny search starts as an restful web server, on start of the application, Based on the credentinals provided by the user, smart search app integrates with respective cloud storage and downloads the files.
+2. The downloaded content is then extracted using apache tika library and then ingested to elastic search
+3. Once the content are ingested to elastic search, Tiny search provides an api to search the data from elastic search
+4. the Query that is used for the content search is
+    ````json
+   { "query": { "regexp": { "content":  { "value": "c.*", "flags": "ALL", "case_insensitive": true}}}}
+    ````
+5. On query results, the app verifies the cloud storage file exists in the respective cloud storage, if it is not not available the document will be deleted asynchronously
 ## Highlevel flow diagram
-### Data ingestion flow
+### Ingestion Type FSCrawler 
+### Data ingestion flow 
 ![img.png](img.png)
 
 ### Data query flow
 ![img_1.png](img_1.png)
+
+### Ingestion Type Elastic search
+![img_4.png](img_4.png)
 
 
 ## Running the application locally
