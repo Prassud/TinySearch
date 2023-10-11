@@ -2,7 +2,8 @@ package com.hevo.search.app.controller;
 
 
 import com.hevo.search.app.entity.Document;
-import com.hevo.search.app.service.FileLoaderService;
+import com.hevo.search.app.service.DataIngestionServiceFactory;
+import com.hevo.search.app.service.fscrawler.FsCrawlerIngestionService;
 import com.hevo.search.app.service.SmartSearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,10 @@ import java.util.List;
 public class SmartSearchController {
 
     @Autowired
-    private FileLoaderService fileLoaderService;
+    private FsCrawlerIngestionService fsCrawlerIngestionService;
+
+    @Autowired
+    private DataIngestionServiceFactory dataIngestionServiceFactory;
 
     @Autowired
     private SmartSearchService smartSearchService;
@@ -44,13 +48,13 @@ public class SmartSearchController {
 
     @PostMapping("/refresh")
     public ResponseEntity load() {
-        fileLoaderService.load();
+        dataIngestionServiceFactory.getIngestionService().refresh();
         return ResponseEntity.ok().build();
     }
 
     @PostConstruct
     public void init() {
         log.info("Loading the data from Cloud storage");
-        fileLoaderService.load();
+        dataIngestionServiceFactory.getIngestionService().refresh();
     }
 }

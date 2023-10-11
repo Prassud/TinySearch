@@ -10,6 +10,7 @@ import com.hevo.search.app.external.AbstractCloudStorageService;
 import com.hevo.search.app.external.ICredentialProvider;
 import com.hevo.search.app.external.model.CloudStorageFile;
 import com.hevo.search.app.external.model.CloudStoreFileList;
+import com.hevo.search.app.external.parser.ContentParser;
 import com.hevo.search.app.store.LocalFileStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,29 +22,25 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.hevo.search.app.external.google.GoogleDriveServiceConstants.GOOGLE_DRIVE_STORAGE_TYPE;
 
-@Component
 @Slf4j
 public class GoogleDriveStorageService extends AbstractCloudStorageService {
 
-    public GoogleDriveStorageService(ICredentialProvider credentialProvider) {
-        super(credentialProvider);
-    }
-
-
-    @Autowired
-    private LocalFileStorage localFileStorage;
-
-
-    @Autowired
-    private GoogleSriveServiceFactory googleSriveServiceFactory;
+    private final GoogleSriveServiceFactory googleSriveServiceFactory;
 
     @Value("${google.drive.root_folder_id}")
     private String googleDriveRootFolderId;
+
+    public GoogleDriveStorageService(ICredentialProvider credentialProvider,
+                                     LocalFileStorage localFileStorage,
+                                     List<ContentParser> contentParsers,
+                                     GoogleSriveServiceFactory googleSriveServiceFactory) {
+        super(credentialProvider, localFileStorage, contentParsers);
+        this.googleSriveServiceFactory = googleSriveServiceFactory;
+    }
 
     @Override
     public CloudStoreFileList listFiles() {
@@ -120,14 +117,14 @@ public class GoogleDriveStorageService extends AbstractCloudStorageService {
     }
 
     @Override
-    public CloudStoreFileList download(CloudStoreFileList cloudStoreFileList) {
+    public CloudStoreFileList download(CloudStoreFileList cloudStoreFileList, boolean saveToLocal) {
         cloudStoreFileList
                 .getFileList()
                 .stream()
                 .parallel()
                 .forEach(eachfile -> {
                     ByteArrayOutputStream byteArrayOutputStream = downloadContent(eachfile);
-                    localFileStorage.saveToLocal(byteArrayOutputStream, eachfile);
+                    save(eachfile, byteArrayOutputStream, saveToLocal);
                 });
         return cloudStoreFileList;
     }
