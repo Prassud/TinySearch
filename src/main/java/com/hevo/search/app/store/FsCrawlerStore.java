@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.hevo.search.app.utils.CommonUtils.fileToMap;
+
 @Repository
 @Slf4j
 public class FsCrawlerStore {
@@ -72,7 +74,7 @@ public class FsCrawlerStore {
     private HttpEntity buildHttpEntity(CloudStorageFile cloudStorageFile, UUID boundary) throws JsonProcessingException {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.RFC6532);
-        Map<String, Object> map = fileToMap(cloudStorageFile);
+        Map<String, Object> map = fileToMap(cloudStorageFile, objectMapper);
         Map<String, Object> external = new HashMap<>();
         external.put("external", map);
         builder.addBinaryBody(FILE, new File(localFileStorage.getPath(cloudStorageFile)), ContentType.DEFAULT_BINARY, cloudStorageFile.getPath());
@@ -82,11 +84,7 @@ public class FsCrawlerStore {
         return builder.build();
     }
 
-    private Map<String, Object> fileToMap(CloudStorageFile cloudStorageFile) {
-        return objectMapper.convertValue(cloudStorageFile,
-                new TypeReference<Map<String, Object>>() {
-                });
-    }
+
 
     private String execute(CloseableHttpClient httpclient, HttpUriRequest post) throws IOException {
         HttpResponse response = httpclient.execute(post);

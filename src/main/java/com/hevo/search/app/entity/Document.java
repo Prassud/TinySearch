@@ -14,7 +14,6 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Document {
     private String content;
-
     private String id;
     private String attachment;
     private File file;

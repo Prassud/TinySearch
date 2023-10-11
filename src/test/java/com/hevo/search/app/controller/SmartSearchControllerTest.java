@@ -9,7 +9,7 @@ import com.hevo.search.app.external.ICredentialProvider;
 import com.hevo.search.app.external.google.GoogleDriveStorageService;
 import com.hevo.search.app.external.google.GoogleSriveServiceFactory;
 import com.hevo.search.app.external.model.CloudStorageFile;
-import com.hevo.search.app.service.FileLoaderService;
+import com.hevo.search.app.service.DataIngestionServiceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -58,7 +58,7 @@ public class SmartSearchControllerTest {
     private ElasticsearchOperations elasticsearchOperations;
 
     @Autowired
-    private FileLoaderService fileLoaderService;
+    private DataIngestionServiceFactory dataIngestionServiceFactory;
 
 
     @Autowired
@@ -74,14 +74,19 @@ public class SmartSearchControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        IndexCoordinates coordinates = IndexCoordinates.of("job_name");
+        deleteIndex("job_name");
+        deleteIndex("file_content");
+        dataIngestionServiceFactory.getIngestionService().refresh();
+    }
+
+    private void deleteIndex(String jobName) {
+        IndexCoordinates coordinates = IndexCoordinates.of(jobName);
 
         Query query = new NativeSearchQueryBuilder().withQuery(matchAllQuery()).build();
         String[] ids = getAllDocuments(coordinates, query);
 
         Query temp = new NativeSearchQueryBuilder().withQuery(idsQuery().addIds(ids)).build();
         elasticsearchOperations.delete(temp, Document.class, coordinates);
-        fileLoaderService.load();
     }
 
     private String[] getAllDocuments(IndexCoordinates coordinates, Query query) {

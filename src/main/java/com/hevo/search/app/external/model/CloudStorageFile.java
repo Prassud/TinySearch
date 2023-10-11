@@ -12,5 +12,6 @@ public class CloudStorageFile {
     private String extension;
     private String tempNameForDownload;
     private String cloudStorageType;
+    private String content;
 
 }

@@ -75,7 +75,9 @@ Once these environment, Application can be started by
 
 ### API
 1. Get /api/search?query=c To search the content
+   2. ![img_2.png](img_2.png)
 2. Post  /api/refresh To refresh the data from cloud storage to elasticsearch
+   3. ![img_3.png](img_3.png)
 
 ### References
 [Design](https://miro.com/app/board/uXjVNdZO5gA=/?share_link_id=696351424297)
